@@ -1,4 +1,19 @@
 {
     "python-envs.defaultEnvManager": "ms-python.python:system",
-    "python-envs.pythonProjects": []
+    "python-envs.pythonProjects": [],
+    "cSpell.words": [
+        "animé",
+        "Buscando",
+        "Buscar",
+        "cargar",
+        "código",
+        "copia",
+        "datos",
+        "enviamos",
+        "escuchando",
+        "instala",
+        "interno",
+        "pulsa",
+        "título"
+    ]
 }

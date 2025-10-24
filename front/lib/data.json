@@ -1,0 +1,1202 @@
+[
+    {
+        "name": "Naruto",
+        "correlation": 0.794
+    },
+    {
+        "name": "Naruto: Shippuden",
+        "correlation": 0.744
+    },
+    {
+        "name": "Boruto: Naruto Next Generations",
+        "correlation": 0.889
+    },
+    {
+        "name": "One Piece",
+        "correlation": 0.721
+    },
+    {
+        "name": "Bleach",
+        "correlation": 0.855
+    },
+    {
+        "name": "Bleach: Thousand-Year Blood War",
+        "correlation": 0.806
+    },
+    {
+        "name": "Dragon Ball",
+        "correlation": 0.717
+    },
+    {
+        "name": "Dragon Ball Z",
+        "correlation": 0.847
+    },
+    {
+        "name": "Dragon Ball GT",
+        "correlation": 0.711
+    },
+    {
+        "name": "Dragon Ball Super",
+        "correlation": 0.826
+    },
+    {
+        "name": "Attack on Titan",
+        "correlation": 0.72
+    },
+    {
+        "name": "Attack on Titan Final Season",
+        "correlation": 0.726
+    },
+    {
+        "name": "Attack on Titan Final Season Part 2",
+        "correlation": 0.823
+    },
+    {
+        "name": "Attack on Titan Final Season THE FINAL CHAPTERS",
+        "correlation": 0.94
+    },
+    {
+        "name": "Fullmetal Alchemist",
+        "correlation": 0.736
+    },
+    {
+        "name": "Fullmetal Alchemist: Brotherhood",
+        "correlation": 0.765
+    },
+    {
+        "name": "Hunter x Hunter (2011)",
+        "correlation": 0.882
+    },
+    {
+        "name": "Hunter x Hunter (1999)",
+        "correlation": 0.975
+    },
+    {
+        "name": "My Hero Academia",
+        "correlation": 0.867
+    },
+    {
+        "name": "My Hero Academia Season 2",
+        "correlation": 0.815
+    },
+    {
+        "name": "My Hero Academia Season 3",
+        "correlation": 0.983
+    },
+    {
+        "name": "My Hero Academia Season 4",
+        "correlation": 0.714
+    },
+    {
+        "name": "My Hero Academia Season 5",
+        "correlation": 0.949
+    },
+    {
+        "name": "My Hero Academia Season 6",
+        "correlation": 0.784
+    },
+    {
+        "name": "Demon Slayer: Kimetsu no Yaiba",
+        "correlation": 0.742
+    },
+    {
+        "name": "Demon Slayer: Entertainment District Arc",
+        "correlation": 0.734
+    },
+    {
+        "name": "Demon Slayer: Swordsmith Village Arc",
+        "correlation": 0.789
+    },
+    {
+        "name": "Jujutsu Kaisen",
+        "correlation": 0.937
+    },
+    {
+        "name": "Jujutsu Kaisen Season 2",
+        "correlation": 0.752
+    },
+    {
+        "name": "Jujutsu Kaisen 0",
+        "correlation": 0.869
+    },
+    {
+        "name": "Black Clover",
+        "correlation": 0.885
+    },
+    {
+        "name": "Black Clover: Sword of the Wizard King",
+        "correlation": 0.808
+    },
+    {
+        "name": "Fairy Tail",
+        "correlation": 0.859
+    },
+    {
+        "name": "Fairy Tail (2014)",
+        "correlation": 0.718
+    },
+    {
+        "name": "Fairy Tail Final Series",
+        "correlation": 0.717
+    },
+    {
+        "name": "Gintama",
+        "correlation": 0.76
+    },
+    {
+        "name": "Gintama°",
+        "correlation": 0.897
+    },
+    {
+        "name": "Gintama.: Shirogane no Tamashii-hen",
+        "correlation": 0.824
+    },
+    {
+        "name": "JoJo's Bizarre Adventure",
+        "correlation": 0.791
+    },
+    {
+        "name": "JoJo's Bizarre Adventure: Stardust Crusaders",
+        "correlation": 0.87
+    },
+    {
+        "name": "JoJo's Bizarre Adventure: Diamond is Unbreakable",
+        "correlation": 0.831
+    },
+    {
+        "name": "JoJo's Bizarre Adventure: Golden Wind",
+        "correlation": 0.787
+    },
+    {
+        "name": "JoJo's Bizarre Adventure: Stone Ocean",
+        "correlation": 0.93
+    },
+    {
+        "name": "One Punch Man",
+        "correlation": 0.903
+    },
+    {
+        "name": "One Punch Man 2nd Season",
+        "correlation": 0.771
+    },
+    {
+        "name": "Mob Psycho 100",
+        "correlation": 0.867
+    },
+    {
+        "name": "Mob Psycho 100 II",
+        "correlation": 0.852
+    },
+    {
+        "name": "Mob Psycho 100 III",
+        "correlation": 0.954
+    },
+    {
+        "name": "Death Note",
+        "correlation": 0.912
+    },
+    {
+        "name": "Tokyo Ghoul",
+        "correlation": 0.784
+    },
+    {
+        "name": "Tokyo Ghoul √A",
+        "correlation": 0.984
+    },
+    {
+        "name": "Tokyo Ghoul:re",
+        "correlation": 0.734
+    },
+    {
+        "name": "Blue Exorcist",
+        "correlation": 0.821
+    },
+    {
+        "name": "Blue Exorcist: Kyoto Saga",
+        "correlation": 0.92
+    },
+    {
+        "name": "Blue Exorcist: Shimane Illuminati Saga",
+        "correlation": 0.744
+    },
+    {
+        "name": "Soul Eater",
+        "correlation": 0.842
+    },
+    {
+        "name": "Soul Eater NOT!",
+        "correlation": 0.711
+    },
+    {
+        "name": "The Seven Deadly Sins",
+        "correlation": 0.894
+    },
+    {
+        "name": "The Seven Deadly Sins: Revival of the Commandments",
+        "correlation": 0.922
+    },
+    {
+        "name": "The Seven Deadly Sins: Imperial Wrath of the Gods",
+        "correlation": 0.866
+    },
+    {
+        "name": "The Seven Deadly Sins: Dragon's Judgement",
+        "correlation": 0.954
+    },
+    {
+        "name": "Sword Art Online",
+        "correlation": 0.791
+    },
+    {
+        "name": "Sword Art Online II",
+        "correlation": 0.902
+    },
+    {
+        "name": "Sword Art Online: Alicization",
+        "correlation": 0.872
+    },
+    {
+        "name": "Sword Art Online: Alicization - War of Underworld",
+        "correlation": 0.868
+    },
+    {
+        "name": "Re:Zero − Starting Life in Another World",
+        "correlation": 0.832
+    },
+    {
+        "name": "Re:Zero Season 2",
+        "correlation": 0.944
+    },
+    {
+        "name": "No Game No Life",
+        "correlation": 0.974
+    },
+    {
+        "name": "Overlord",
+        "correlation": 0.837
+    },
+    {
+        "name": "Overlord II",
+        "correlation": 0.893
+    },
+    {
+        "name": "Overlord III",
+        "correlation": 0.718
+    },
+    {
+        "name": "Overlord IV",
+        "correlation": 0.903
+    },
+    {
+        "name": "That Time I Got Reincarnated as a Slime",
+        "correlation": 0.888
+    },
+    {
+        "name": "That Time I Got Reincarnated as a Slime Season 2",
+        "correlation": 0.988
+    },
+    {
+        "name": "The Slime Diaries",
+        "correlation": 0.938
+    },
+    {
+        "name": "Konosuba: God's Blessing on This Wonderful World!",
+        "correlation": 0.783
+    },
+    {
+        "name": "Konosuba 2",
+        "correlation": 0.812
+    },
+    {
+        "name": "Konosuba: An Explosion on This Wonderful World!",
+        "correlation": 0.894
+    },
+    {
+        "name": "Log Horizon",
+        "correlation": 0.707
+    },
+    {
+        "name": "Log Horizon Season 2",
+        "correlation": 0.834
+    },
+    {
+        "name": "Log Horizon: Destruction of the Round Table",
+        "correlation": 0.749
+    },
+    {
+        "name": "The Rising of the Shield Hero",
+        "correlation": 0.734
+    },
+    {
+        "name": "The Rising of the Shield Hero Season 2",
+        "correlation": 0.717
+    },
+    {
+        "name": "Mushoku Tensei: Jobless Reincarnation",
+        "correlation": 0.923
+    },
+    {
+        "name": "Mushoku Tensei: Jobless Reincarnation II",
+        "correlation": 0.738
+    },
+    {
+        "name": "Grimgar of Fantasy and Ash",
+        "correlation": 0.772
+    },
+    {
+        "name": "GATE",
+        "correlation": 0.813
+    },
+    {
+        "name": "The Eminence in Shadow",
+        "correlation": 0.953
+    },
+    {
+        "name": "Your Lie in April",
+        "correlation": 0.723
+    },
+    {
+        "name": "Clannad",
+        "correlation": 0.83
+    },
+    {
+        "name": "Clannad: After Story",
+        "correlation": 0.859
+    },
+    {
+        "name": "Toradora!",
+        "correlation": 0.956
+    },
+    {
+        "name": "Anohana: The Flower We Saw That Day",
+        "correlation": 0.938
+    },
+    {
+        "name": "Kaguya-sama: Love is War",
+        "correlation": 0.951
+    },
+    {
+        "name": "Kaguya-sama: Love is War Season 2",
+        "correlation": 0.781
+    },
+    {
+        "name": "Kaguya-sama: Love is War -Ultra Romantic-",
+        "correlation": 0.82
+    },
+    {
+        "name": "Komi Can't Communicate",
+        "correlation": 0.804
+    },
+    {
+        "name": "Horimiya",
+        "correlation": 0.956
+    },
+    {
+        "name": "Fruits Basket (2019)",
+        "correlation": 0.978
+    },
+    {
+        "name": "Fruits Basket 2nd Season",
+        "correlation": 0.744
+    },
+    {
+        "name": "Fruits Basket: The Final",
+        "correlation": 0.751
+    },
+    {
+        "name": "Violet Evergarden",
+        "correlation": 0.767
+    },
+    {
+        "name": "Violet Evergarden: The Movie",
+        "correlation": 0.768
+    },
+    {
+        "name": "A Silent Voice",
+        "correlation": 0.841
+    },
+    {
+        "name": "The Ancient Magus' Bride",
+        "correlation": 0.871
+    },
+    {
+        "name": "The Ancient Magus' Bride Season 2",
+        "correlation": 0.776
+    },
+    {
+        "name": "March Comes in Like a Lion",
+        "correlation": 0.701
+    },
+    {
+        "name": "March Comes in Like a Lion 2nd Season",
+        "correlation": 0.821
+    },
+    {
+        "name": "Nana",
+        "correlation": 0.807
+    },
+    {
+        "name": "Honey and Clover",
+        "correlation": 0.864
+    },
+    {
+        "name": "Honey and Clover II",
+        "correlation": 0.976
+    },
+    {
+        "name": "Golden Time",
+        "correlation": 0.9
+    },
+    {
+        "name": "Oregairu",
+        "correlation": 0.849
+    },
+    {
+        "name": "Oregairu Zoku",
+        "correlation": 0.879
+    },
+    {
+        "name": "Oregairu Kan",
+        "correlation": 0.896
+    },
+    {
+        "name": "Nisekoi",
+        "correlation": 0.716
+    },
+    {
+        "name": "Nisekoi:",
+        "correlation": 0.961
+    },
+    {
+        "name": "The Quintessential Quintuplets",
+        "correlation": 0.926
+    },
+    {
+        "name": "The Quintessential Quintuplets 2",
+        "correlation": 0.954
+    },
+    {
+        "name": "Rent-a-Girlfriend",
+        "correlation": 0.931
+    },
+    {
+        "name": "Tsuredure Children",
+        "correlation": 0.814
+    },
+    {
+        "name": "Wotakoi: Love is Hard for Otaku",
+        "correlation": 0.816
+    },
+    {
+        "name": "The Pet Girl of Sakurasou",
+        "correlation": 0.73
+    },
+    {
+        "name": "Kokoro Connect",
+        "correlation": 0.884
+    },
+    {
+        "name": "My Dress-Up Darling",
+        "correlation": 0.718
+    },
+    {
+        "name": "Bocchi the Rock!",
+        "correlation": 0.72
+    },
+    {
+        "name": "K-On!",
+        "correlation": 0.761
+    },
+    {
+        "name": "K-On!!",
+        "correlation": 0.747
+    },
+    {
+        "name": "The Melancholy of Haruhi Suzumiya",
+        "correlation": 0.799
+    },
+    {
+        "name": "The Disappearance of Haruhi Suzumiya",
+        "correlation": 0.715
+    },
+    {
+        "name": "Nichijou",
+        "correlation": 0.7
+    },
+    {
+        "name": "Lucky Star",
+        "correlation": 0.744
+    },
+    {
+        "name": "Azumanga Daioh",
+        "correlation": 0.729
+    },
+    {
+        "name": "Barakamon",
+        "correlation": 0.805
+    },
+    {
+        "name": "Silver Spoon",
+        "correlation": 0.707
+    },
+    {
+        "name": "Silver Spoon 2nd Season",
+        "correlation": 0.954
+    },
+    {
+        "name": "Steins;Gate",
+        "correlation": 0.878
+    },
+    {
+        "name": "Steins;Gate 0",
+        "correlation": 0.743
+    },
+    {
+        "name": "Psycho-Pass",
+        "correlation": 0.773
+    },
+    {
+        "name": "Psycho-Pass 2",
+        "correlation": 0.801
+    },
+    {
+        "name": "Psycho-Pass 3",
+        "correlation": 0.806
+    },
+    {
+        "name": "Monster",
+        "correlation": 0.736
+    },
+    {
+        "name": "Paranoia Agent",
+        "correlation": 0.946
+    },
+    {
+        "name": "Serial Experiments Lain",
+        "correlation": 0.988
+    },
+    {
+        "name": "Ergo Proxy",
+        "correlation": 0.835
+    },
+    {
+        "name": "Texhnolyze",
+        "correlation": 0.84
+    },
+    {
+        "name": "Higurashi: When They Cry",
+        "correlation": 0.725
+    },
+    {
+        "name": "Higurashi: When They Cry – Kai",
+        "correlation": 0.73
+    },
+    {
+        "name": "When They Cry: Gou",
+        "correlation": 0.799
+    },
+    {
+        "name": "Perfect Blue",
+        "correlation": 0.777
+    },
+    {
+        "name": "Paprika",
+        "correlation": 0.94
+    },
+    {
+        "name": "Another",
+        "correlation": 0.747
+    },
+    {
+        "name": "Erased",
+        "correlation": 0.707
+    },
+    {
+        "name": "Made in Abyss",
+        "correlation": 0.976
+    },
+    {
+        "name": "Made in Abyss: The Golden City of the Scorching Sun",
+        "correlation": 0.853
+    },
+    {
+        "name": "Made in Abyss: Dawn of the Deep Soul",
+        "correlation": 0.743
+    },
+    {
+        "name": "The Promised Neverland",
+        "correlation": 0.858
+    },
+    {
+        "name": "Parasyte -the maxim-",
+        "correlation": 0.708
+    },
+    {
+        "name": "Baccano!",
+        "correlation": 0.853
+    },
+    {
+        "name": "Durarara!!",
+        "correlation": 0.984
+    },
+    {
+        "name": "Durarara!!x2 Shou",
+        "correlation": 0.95
+    },
+    {
+        "name": "91 Days",
+        "correlation": 0.902
+    },
+    {
+        "name": "Black Lagoon",
+        "correlation": 0.776
+    },
+    {
+        "name": "Black Lagoon: The Second Barrage",
+        "correlation": 0.806
+    },
+    {
+        "name": "Haikyuu!!",
+        "correlation": 0.748
+    },
+    {
+        "name": "Haikyuu!! Second Season",
+        "correlation": 0.924
+    },
+    {
+        "name": "Haikyuu!! Karasuno vs Shiratorizawa",
+        "correlation": 0.854
+    },
+    {
+        "name": "Kuroko's Basketball",
+        "correlation": 0.926
+    },
+    {
+        "name": "Kuroko's Basketball 2nd Season",
+        "correlation": 0.796
+    },
+    {
+        "name": "Kuroko's Basketball 3rd Season",
+        "correlation": 0.765
+    },
+    {
+        "name": "Blue Lock",
+        "correlation": 0.935
+    },
+    {
+        "name": "Ao Ashi",
+        "correlation": 0.986
+    },
+    {
+        "name": "Captain Tsubasa (2018)",
+        "correlation": 0.947
+    },
+    {
+        "name": "Slam Dunk",
+        "correlation": 0.934
+    },
+    {
+        "name": "Yowamushi Pedal",
+        "correlation": 0.937
+    },
+    {
+        "name": "Yowamushi Pedal: Grande Road",
+        "correlation": 0.915
+    },
+    {
+        "name": "Hajime no Ippo",
+        "correlation": 0.766
+    },
+    {
+        "name": "Megalo Box",
+        "correlation": 0.85
+    },
+    {
+        "name": "Sk8 the Infinity",
+        "correlation": 0.803
+    },
+    {
+        "name": "Ping Pong the Animation",
+        "correlation": 0.708
+    },
+    {
+        "name": "Free!",
+        "correlation": 0.708
+    },
+    {
+        "name": "Free! Eternal Summer",
+        "correlation": 0.781
+    },
+    {
+        "name": "Run with the Wind",
+        "correlation": 0.775
+    },
+    {
+        "name": "Cowboy Bebop",
+        "correlation": 0.901
+    },
+    {
+        "name": "Samurai Champloo",
+        "correlation": 0.977
+    },
+    {
+        "name": "Trigun",
+        "correlation": 0.83
+    },
+    {
+        "name": "Trigun Stampede",
+        "correlation": 0.972
+    },
+    {
+        "name": "Neon Genesis Evangelion",
+        "correlation": 0.987
+    },
+    {
+        "name": "The End of Evangelion",
+        "correlation": 0.977
+    },
+    {
+        "name": "Gurren Lagann",
+        "correlation": 0.806
+    },
+    {
+        "name": "Code Geass: Lelouch of the Rebellion",
+        "correlation": 0.764
+    },
+    {
+        "name": "Code Geass: Lelouch of the Rebellion R2",
+        "correlation": 0.766
+    },
+    {
+        "name": "A Certain Scientific Railgun",
+        "correlation": 0.757
+    },
+    {
+        "name": "A Certain Scientific Railgun S",
+        "correlation": 0.759
+    },
+    {
+        "name": "A Certain Magical Index",
+        "correlation": 0.881
+    },
+    {
+        "name": "A Certain Magical Index II",
+        "correlation": 0.961
+    },
+    {
+        "name": "Steins;Gate: The Movie − Load Region of Déjà Vu",
+        "correlation": 0.944
+    },
+    {
+        "name": "Ghost in the Shell: Stand Alone Complex",
+        "correlation": 0.839
+    },
+    {
+        "name": "Ghost in the Shell 2: Innocence",
+        "correlation": 0.889
+    },
+    {
+        "name": "Akira",
+        "correlation": 0.932
+    },
+    {
+        "name": "Planetes",
+        "correlation": 0.725
+    },
+    {
+        "name": "Psycho-Pass: Sinners of the System",
+        "correlation": 0.892
+    },
+    {
+        "name": "Astra Lost in Space",
+        "correlation": 0.964
+    },
+    {
+        "name": "Space Dandy",
+        "correlation": 0.927
+    },
+    {
+        "name": "Macross",
+        "correlation": 0.918
+    },
+    {
+        "name": "Macross Plus",
+        "correlation": 0.839
+    },
+    {
+        "name": "Macross Frontier",
+        "correlation": 0.752
+    },
+    {
+        "name": "Eureka Seven",
+        "correlation": 0.929
+    },
+    {
+        "name": "Eureka Seven AO",
+        "correlation": 0.796
+    },
+    {
+        "name": "Aldnoah.Zero",
+        "correlation": 0.932
+    },
+    {
+        "name": "Knights of Sidonia",
+        "correlation": 0.982
+    },
+    {
+        "name": "Mobile Suit Gundam",
+        "correlation": 0.815
+    },
+    {
+        "name": "Mobile Suit Zeta Gundam",
+        "correlation": 0.816
+    },
+    {
+        "name": "Mobile Suit Gundam 00",
+        "correlation": 0.975
+    },
+    {
+        "name": "Gundam Iron-Blooded Orphans",
+        "correlation": 0.91
+    },
+    {
+        "name": "Demon Slayer: Mugen Train",
+        "correlation": 0.749
+    },
+    {
+        "name": "Hellsing",
+        "correlation": 0.737
+    },
+    {
+        "name": "Hellsing Ultimate",
+        "correlation": 0.744
+    },
+    {
+        "name": "Elfen Lied",
+        "correlation": 0.962
+    },
+    {
+        "name": "Kabaneri of the Iron Fortress",
+        "correlation": 0.934
+    },
+    {
+        "name": "Dorohedoro",
+        "correlation": 0.742
+    },
+    {
+        "name": "Chainsaw Man",
+        "correlation": 0.94
+    },
+    {
+        "name": "Gintama': Enchousen",
+        "correlation": 0.984
+    },
+    {
+        "name": "Saiki Kusuo no Psi-nan",
+        "correlation": 0.891
+    },
+    {
+        "name": "Saiki Kusuo no Psi-nan 2",
+        "correlation": 0.802
+    },
+    {
+        "name": "The Devil Is a Part-Timer!",
+        "correlation": 0.859
+    },
+    {
+        "name": "The Devil Is a Part-Timer! Season 2",
+        "correlation": 0.738
+    },
+    {
+        "name": "Grand Blue",
+        "correlation": 0.704
+    },
+    {
+        "name": "Asobi Asobase",
+        "correlation": 0.982
+    },
+    {
+        "name": "Prison School",
+        "correlation": 0.888
+    },
+    {
+        "name": "Daily Lives of High School Boys",
+        "correlation": 0.853
+    },
+    {
+        "name": "The Tatami Galaxy",
+        "correlation": 0.971
+    },
+    {
+        "name": "Keep Your Hands Off Eizouken!",
+        "correlation": 0.826
+    },
+    {
+        "name": "Great Teacher Onizuka",
+        "correlation": 0.953
+    },
+    {
+        "name": "Spirited Away",
+        "correlation": 0.94
+    },
+    {
+        "name": "Howl's Moving Castle",
+        "correlation": 0.761
+    },
+    {
+        "name": "Princess Mononoke",
+        "correlation": 0.773
+    },
+    {
+        "name": "My Neighbor Totoro",
+        "correlation": 0.785
+    },
+    {
+        "name": "Kiki's Delivery Service",
+        "correlation": 0.77
+    },
+    {
+        "name": "Nausicaä of the Valley of the Wind",
+        "correlation": 0.87
+    },
+    {
+        "name": "Castle in the Sky",
+        "correlation": 0.775
+    },
+    {
+        "name": "Ponyo",
+        "correlation": 0.822
+    },
+    {
+        "name": "Porco Rosso",
+        "correlation": 0.738
+    },
+    {
+        "name": "The Wind Rises",
+        "correlation": 0.964
+    },
+    {
+        "name": "The Boy and the Heron",
+        "correlation": 0.803
+    },
+    {
+        "name": "Your Name",
+        "correlation": 0.833
+    },
+    {
+        "name": "Weathering With You",
+        "correlation": 0.869
+    },
+    {
+        "name": "5 Centimeters per Second",
+        "correlation": 0.962
+    },
+    {
+        "name": "The Garden of Words",
+        "correlation": 0.822
+    },
+    {
+        "name": "Summer Wars",
+        "correlation": 0.966
+    },
+    {
+        "name": "Wolf Children",
+        "correlation": 0.845
+    },
+    {
+        "name": "The Girl Who Leapt Through Time",
+        "correlation": 0.854
+    },
+    {
+        "name": "Tokyo Godfathers",
+        "correlation": 0.852
+    },
+    {
+        "name": "Millennium Actress",
+        "correlation": 0.705
+    },
+    {
+        "name": "Shirobako",
+        "correlation": 0.828
+    },
+    {
+        "name": "Bakuman.",
+        "correlation": 0.753
+    },
+    {
+        "name": "Carole & Tuesday",
+        "correlation": 0.701
+    },
+    {
+        "name": "Beck: Mongolian Chop Squad",
+        "correlation": 0.932
+    },
+    {
+        "name": "Nodame Cantabile",
+        "correlation": 0.75
+    },
+    {
+        "name": "Nodame Cantabile: Paris",
+        "correlation": 0.837
+    },
+    {
+        "name": "Love Live! School Idol Project",
+        "correlation": 0.91
+    },
+    {
+        "name": "Love Live! Sunshine!!",
+        "correlation": 0.861
+    },
+    {
+        "name": "The iDOLM@STER",
+        "correlation": 0.795
+    },
+    {
+        "name": "Zombieland Saga",
+        "correlation": 0.85
+    },
+    {
+        "name": "Inuyasha",
+        "correlation": 0.861
+    },
+    {
+        "name": "Yashahime: Princess Half-Demon",
+        "correlation": 0.927
+    },
+    {
+        "name": "Ranma ½",
+        "correlation": 0.731
+    },
+    {
+        "name": "Urusei Yatsura",
+        "correlation": 0.862
+    },
+    {
+        "name": "Detective Conan",
+        "correlation": 0.772
+    },
+    {
+        "name": "Lupin the Third",
+        "correlation": 0.78
+    },
+    {
+        "name": "City Hunter",
+        "correlation": 0.924
+    },
+    {
+        "name": "Cat's Eye",
+        "correlation": 0.847
+    },
+    {
+        "name": "Rurouni Kenshin",
+        "correlation": 0.863
+    },
+    {
+        "name": "Samurai X: Trust and Betrayal",
+        "correlation": 0.92
+    },
+    {
+        "name": "Berserk (1997)",
+        "correlation": 0.965
+    },
+    {
+        "name": "Berserk (2016)",
+        "correlation": 0.829
+    },
+    {
+        "name": "Sailor Moon",
+        "correlation": 0.878
+    },
+    {
+        "name": "Sailor Moon Crystal",
+        "correlation": 0.847
+    },
+    {
+        "name": "Oshi no Ko",
+        "correlation": 0.849
+    },
+    {
+        "name": "Hell's Paradise",
+        "correlation": 0.901
+    },
+    {
+        "name": "Ranking of Kings",
+        "correlation": 0.831
+    },
+    {
+        "name": "Spy x Family",
+        "correlation": 0.855
+    },
+    {
+        "name": "Blue Period",
+        "correlation": 0.839
+    },
+    {
+        "name": "Dr. Stone",
+        "correlation": 0.973
+    },
+    {
+        "name": "Dr. Stone: Stone Wars",
+        "correlation": 0.903
+    },
+    {
+        "name": "Dr. Stone: New World",
+        "correlation": 0.954
+    },
+    {
+        "name": "The Dangers in My Heart",
+        "correlation": 0.973
+    },
+    {
+        "name": "Call of the Night",
+        "correlation": 0.775
+    },
+    {
+        "name": "Vinland Saga",
+        "correlation": 0.862
+    },
+    {
+        "name": "Vinland Saga Season 2",
+        "correlation": 0.974
+    },
+    {
+        "name": "The Promised Neverland Season 2",
+        "correlation": 0.944
+    },
+    {
+        "name": "Banana Fish",
+        "correlation": 0.74
+    },
+    {
+        "name": "86 Eighty-Six",
+        "correlation": 0.735
+    },
+    {
+        "name": "86 Eighty-Six Part 2",
+        "correlation": 0.828
+    },
+    {
+        "name": "To Your Eternity",
+        "correlation": 0.721
+    },
+    {
+        "name": "To Your Eternity Season 2",
+        "correlation": 0.77
+    },
+    {
+        "name": "The Faraway Paladin",
+        "correlation": 0.721
+    },
+    {
+        "name": "The Case Study of Vanitas",
+        "correlation": 0.894
+    },
+    {
+        "name": "The Case Study of Vanitas Part 2",
+        "correlation": 0.927
+    },
+    {
+        "name": "Odd Taxi",
+        "correlation": 0.96
+    }
+]
