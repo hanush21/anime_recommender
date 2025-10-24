@@ -1,13 +1,35 @@
-version: "3.9"
 services:
+  backend:
+    build:
+      context: ./back
+    container_name: backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./back:/app
+      - ./back/db.sqlite3:/app/db.sqlite3
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sSf http://localhost:8000/ > /dev/null || curl -sSf http://localhost:8000/getrecomenders > /dev/null"]
+      interval: 10s
+      timeout: 3s
+      retries: 8
+
   frontend:
     build:
       context: ./front
     container_name: frontend
     ports:
       - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      # Si llamas directo al back: (si usas proxy interno, puedes omitirlo)
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    command: npm run dev -- -p 3000 -H 0.0.0.0
     volumes:
       - ./front:/app
       - /app/node_modules
-    environment:
-      - NODE_ENV=development
+    depends_on:
+      backend:
+        condition: service_healthy
