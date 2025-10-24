@@ -181,29 +181,7 @@ python manage.py runserver 0.0.0.0:8000
 ### Frontend
 ```bash
 cd front
-npm ci
+npm i
 npm run dev
 # abrir http://localhost:3000
 ```
-
----
-
-## Troubleshooting
-
-- **Cannot connect to the Docker daemon**  
-  Arranca Docker Desktop (mac/Win) o `sudo systemctl start docker` (Linux).  
-  Verifica contexto:
-  ```bash
-  docker context ls
-  docker context use default
-  ```
-
-- **Puertos ocupados**  
-  Cambia mapeos en `docker-compose.yml` o libera puertos 3000/8000.
-
-- **CORS**  
-  Si no usas el proxy del front `/api/recommenders` y llamas directo al back, recuerda la configuración de `django-cors-headers` indicada arriba.
-
----
-
-¡Listo! Cualquier duda o mejora, abre un issue o me comentas.
