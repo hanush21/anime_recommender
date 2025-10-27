@@ -1,32 +1,103 @@
+import json
+import os
+import time
 import pandas as pd
 from pathlib import Path
-from typing import Optional, List, Dict
-import time
+from typing import Optional, List, Dict, Tuple
 from datetime import datetime, timezone
+
+CACHE_DIRNAME = "cache"
+CACHE_CORR = "item_corr.parquet"   # puedes usar .pkl si prefieres
+CACHE_META = "item_corr_meta.json"
+
+def _cache_paths(base_dir: Path) -> Tuple[Path, Path, Path]:
+    base = Path(base_dir)
+    cdir = base / CACHE_DIRNAME
+    cdir.mkdir(parents=True, exist_ok=True)
+    return cdir, cdir / CACHE_CORR, cdir / CACHE_META
+
+def _src_mtime(p: Path) -> float:
+    try:
+        return p.stat().st_mtime
+    except FileNotFoundError:
+        return 0.0
 
 class ItemBasedRecommender:
     def __init__(self, base_dir: Path, min_periods: int = 10):
         t0 = time.time()
+        self.base_dir = Path(base_dir)
+        self.min_periods = int(min_periods)
 
+        # rutas de datos
+        anime_csv = self.base_dir / "anime.csv"
+        ratings_csv = self.base_dir / "ratings_clean_1.csv"
+
+        # rutas cache
+        cache_dir, corr_path, meta_path = _cache_paths(self.base_dir)
+
+        # 1) ¿cache válido?
+        cache_ok = False
+        if corr_path.exists() and meta_path.exists():
+            try:
+                meta = json.loads(meta_path.read_text())
+                cond = (
+                    meta.get("min_periods") == self.min_periods
+                    and meta.get("anime_csv_mtime", 0) == _src_mtime(anime_csv)
+                    and meta.get("ratings_csv_mtime", 0) == _src_mtime(ratings_csv)
+                )
+                if cond:
+                    # cargar corr desde parquet
+                    self.corr = pd.read_parquet(corr_path)
+                    cache_ok = True
+            except Exception:
+                cache_ok = False
+
+        # 2) cargar anime siempre (para id->name)
         a_cols = ["anime_id", "name"]
-        self.anime = pd.read_csv(base_dir / "anime.csv", usecols=a_cols)
+        self.anime = pd.read_csv(anime_csv, usecols=a_cols)
         self.anime["name_norm"] = self.anime["name"].str.strip().str.lower()
-
-        ratings = pd.read_csv(base_dir / "ratings_clean_1.csv")
-        ratings = ratings[ratings["rating"] != -1].copy()
-
-        ui = ratings.pivot_table(index="user_id", columns="anime_id", values="rating", aggfunc="mean")
-        self.corr = ui.corr(method="pearson", min_periods=min_periods)
-
         self.id_to_name = dict(zip(self.anime["anime_id"], self.anime["name"]))
         self.name_to_id = (
             self.anime.drop_duplicates("name_norm").set_index("name_norm")["anime_id"].to_dict()
         )
 
-        self.min_periods = min_periods
-        self.built_at = datetime.now(timezone.utc).isoformat()
-        self.build_seconds = round(time.time() - t0, 3)
+        # 3) si no hay cache válido, construir
+        if not cache_ok:
+            ratings = pd.read_csv(ratings_csv)
+            ratings = ratings[ratings["rating"] != -1].copy()
 
+            ui = ratings.pivot_table(
+                index="user_id", columns="anime_id", values="rating", aggfunc="mean"
+            )
+            self.corr = ui.corr(method="pearson", min_periods=self.min_periods)
+
+            # guardar cache
+            try:
+                self.corr.to_parquet(corr_path, index=True)
+                meta_out = {
+                    "min_periods": self.min_periods,
+                    "anime_csv_mtime": _src_mtime(anime_csv),
+                    "ratings_csv_mtime": _src_mtime(ratings_csv),
+                    "built_at": datetime.now(timezone.utc).isoformat(),
+                    "build_seconds": round(time.time() - t0, 3),
+                    "corr_shape": list(self.corr.shape),
+                }
+                meta_path.write_text(json.dumps(meta_out, ensure_ascii=False, indent=2))
+            except Exception:
+                # si falla guardar, seguir funcionando sin cache
+                pass
+
+        # métricas
+        self.built_at = datetime.now(timezone.utc).isoformat()
+        # si existe meta, úsalo para tiempos reales de construcción
+        try:
+            meta = json.loads((self.base_dir / CACHE_DIRNAME / CACHE_META).read_text())
+            self.build_seconds = meta.get("build_seconds", round(time.time() - t0, 3))
+        except Exception:
+            self.build_seconds = round(time.time() - t0, 3)
+        self.corr_shape = tuple(self.corr.shape)
+
+    # -------- helpers --------
     def _find_id(self, title: str) -> Optional[int]:
         t = title.strip().lower()
         if t in self.name_to_id:
@@ -34,11 +105,18 @@ class ItemBasedRecommender:
         m = self.anime[self.anime["name_norm"].str.contains(t, na=False)]
         return int(m.iloc[0]["anime_id"]) if not m.empty else None
 
+    # -------- API --------
     def similares_por_titulo(self, title: str, topk: int = 10) -> pd.DataFrame:
         aid = self._find_id(title)
         if aid is None or aid not in self.corr.columns:
             raise ValueError(f"No encontré '{title}' o no tiene correlaciones suficientes.")
-        sims = self.corr[aid].dropna().sort_values(ascending=False).drop(index=aid, errors="ignore").head(topk)
+        sims = (
+            self.corr[aid]
+            .dropna()
+            .sort_values(ascending=False)
+            .drop(index=aid, errors="ignore")
+            .head(topk)
+        )
         out = pd.DataFrame({"anime_id": sims.index.astype(int), "correlation": sims.values})
         out["name"] = out["anime_id"].map(self.id_to_name)
         return out[["anime_id", "name", "correlation"]]
@@ -68,7 +146,13 @@ class ItemBasedRecommender:
             sims = self.corr[aid].dropna()
             r = float(ratings_map.get(aid, default_rating)) if ratings_map else default_rating
             cand = pd.concat([cand, sims * r])
-        cand = cand.groupby(cand.index).sum().drop(index=items, errors="ignore").sort_values(ascending=False).head(topk)
+        cand = (
+            cand.groupby(cand.index)
+            .sum()
+            .drop(index=items, errors="ignore")
+            .sort_values(ascending=False)
+            .head(topk)
+        )
 
         out = pd.DataFrame({"anime_id": cand.index.astype(int), "correlation": cand.values})
         out["name"] = out["anime_id"].map(self.id_to_name)
@@ -79,8 +163,9 @@ class ItemBasedRecommender:
             "ready": True,
             "built_at": self.built_at,
             "build_seconds": self.build_seconds,
-            "corr_shape": tuple(self.corr.shape),
+            "corr_shape": self.corr_shape,
             "min_periods": self.min_periods,
+            "cache_dir": str((self.base_dir / CACHE_DIRNAME).resolve()),
         }
 
 # --- singleton ---

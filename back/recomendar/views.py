@@ -5,7 +5,8 @@ from django.conf import settings
 from pathlib import Path
 import logging
 
-from .utils.Anime_recomendator import get_recommender, get_status  # <— AQUÍ
+from .utils.Anime_recomendator import get_recommender, get_status 
+
 
 logger = logging.getLogger("recomendar")
 DATA_DIR = Path(settings.BASE_DIR) / "recomendar" / "utils"
