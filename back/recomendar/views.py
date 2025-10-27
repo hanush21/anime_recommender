@@ -4,6 +4,11 @@ from rest_framework import status
 from django.conf import settings
 from pathlib import Path
 import logging
+import os
+
+
+
+
 
 from .utils.Anime_recomendator import get_recommender, get_status 
 
@@ -26,6 +31,8 @@ def recommender_status(request):
 def getrecomenders(request):
     q = request.query_params.get("q", "")
     topk = int(request.query_params.get("topk", 10))
+    df = rec.similares_por_titulo(q, topk=topk, order="name")
+    payload = df.to_dict(orient="records")
     if not q.strip():
         return Response({"error": "Parámetro 'q' requerido."}, status=status.HTTP_400_BAD_REQUEST)
     logger.info("GET /getrecomenders q='%s' topk=%s", q, topk)
@@ -46,6 +53,16 @@ def recommend_by_seen(request):
     default_rating = float(data.get("rating", 10.0))
     topk = int(data.get("topk", 10))
     ratings_map = {}
+    
+    df = rec.recomendar_por_vistos(
+    seen_ids=seen_ids,
+    seen_names=seen_names,
+    ratings_map=ratings_map or None,
+    default_rating=default_rating,
+    topk=topk,
+    order="name",
+    )
+    payload = df.to_dict(orient="records")
     for k, v in ratings_map_raw.items():
         try: ratings_map[int(k)] = float(v)
         except Exception: pass
@@ -61,3 +78,37 @@ def recommend_by_seen(request):
     except Exception as e:
         logger.exception("recommend_by_seen ERROR: %s", e)
         return Response({"error": str(e)}, status=400)
+
+
+DATA_DIR = Path(settings.BASE_DIR) / "recomendar" / "utils"
+
+@api_view(["GET"])
+def healthz(request):
+    return Response({"status": "ok"}, status=200)
+
+@api_view(["GET"])
+def recommender_status(request):
+    # listo si el pivot ya está cargado
+    return Response(get_status(DATA_DIR), status=200)
+
+@api_view(["GET"])
+def list_titles(request):
+    """
+    GET /anime/titles?q=nar&limit=200
+    Devuelve [{anime_id, name}], ordenado por nombre.
+    """
+    q = (request.query_params.get("q") or "").strip().lower()
+    try:
+        limit = int(request.query_params.get("limit", 200))
+    except Exception:
+        limit = 200
+
+    rec = get_recommender(DATA_DIR, min_periods=int(os.environ.get("DJ_MIN_PERIODS", "3")))
+    df = rec.anime[["anime_id", "name"]].copy()
+    if q:
+        # búsqueda contains sobre nombre normalizado
+        mask = rec.anime["name_norm"].str.contains(q, na=False)
+        df = rec.anime.loc[mask, ["anime_id", "name"]]
+
+    df = df.sort_values("name", kind="stable").head(limit)
+    return Response(df.to_dict(orient="records"), status=200)

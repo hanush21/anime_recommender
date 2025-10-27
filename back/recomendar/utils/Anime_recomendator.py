@@ -1,5 +1,4 @@
-# back/recomendar/utils/Anime_recomendator.py
-import os, time, json, re
+import os, re, time, csv, json
 from pathlib import Path
 from typing import Optional, List, Dict
 import pandas as pd
@@ -13,18 +12,27 @@ def _norm(s: str) -> str:
     s = re.sub(r"\s+", " ", s).strip()
     return s
 
+def _cache_dir(base_data_dir: Path) -> Path:
+    dj = os.environ.get("DJ_CACHE_DIR")
+    if dj:
+        p = Path(dj)
+    else:
+        p = base_data_dir / "cache"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+
 class ItemBasedRecommender:
     """
-    Construye SOLO la tabla usuario-item (pivot) en memoria (float32),
-    y usa pandas.corrwith para calcular similitudes BAJO DEMANDA.
-    Evita OOM al no crear la matriz completa item×item.
+    Usa vecinos precomputados (neighbors CSV) para respuestas en milisegundos.
+    Fallback: corrwith puntual si falta el vecindario de algún item.
     """
-    def __init__(self, data_dir: Path, min_periods: int = 3):
+    def __init__(self, data_dir: Path, min_periods: int = 3, topk_default: int = 50):
         t0 = time.time()
         self.data_dir = Path(data_dir)
         self.min_periods = int(min_periods)
+        self.topk_default = int(os.environ.get("DJ_TOPK", topk_default))
 
-        # Carga anime
+        # Anime
         a_cols = ["anime_id", "name"]
         self.anime = pd.read_csv(self.data_dir / "anime.csv", usecols=a_cols)
         self.anime["name_norm"] = self.anime["name"].map(_norm)
@@ -33,19 +41,34 @@ class ItemBasedRecommender:
             self.anime.drop_duplicates("name_norm").set_index("name_norm")["anime_id"].to_dict()
         )
 
-        # Carga ratings y construye pivot (downcast para ahorrar RAM)
-        ratings = pd.read_csv(self.data_dir / "ratings_clean_1.csv", usecols=["user_id","anime_id","rating"])
-        ratings = ratings[ratings["rating"] != -1].copy()
-        ratings["user_id"] = ratings["user_id"].astype("int32")
-        ratings["anime_id"] = ratings["anime_id"].astype("int32")
-        ratings["rating"] = ratings["rating"].astype("float32")
+        # Intentar cargar vecinos
+        cdir = _cache_dir(self.data_dir)
+        neigh_csv = cdir / f"neighbors_top{self.topk_default}_mp{self.min_periods}.csv"
+        self._neighbors: Dict[int, pd.DataFrame] = {}
 
-        ui = ratings.pivot_table(index="user_id", columns="anime_id", values="rating", aggfunc="mean")
-        self.ui = ui.astype("float32")  # reduce memoria
+        if neigh_csv.exists():
+            # Cargar a dict en memoria
+            df = pd.read_csv(neigh_csv, dtype={"src_id":"int32","dst_id":"int32","correlation":"float32","common":"int32"})
+            df = df.sort_values(["src_id","correlation"], ascending=[True, False])
+            for src, grp in df.groupby("src_id"):
+                g = grp[["dst_id","correlation"]].copy()
+                g["name"] = g["dst_id"].map(self.id_to_name)
+                g.rename(columns={"dst_id":"anime_id"}, inplace=True)
+                self._neighbors[int(src)] = g[["anime_id","name","correlation"]].reset_index(drop=True)
+
+        # Fallback: pivot ligero para corrwith puntual
+        self.ui = None
+        if not self._neighbors:
+            ratings = pd.read_csv(self.data_dir / "ratings_clean_1.csv", usecols=["user_id","anime_id","rating"])
+            ratings = ratings[ratings["rating"] != -1].copy()
+            ratings["user_id"] = ratings["user_id"].astype("int32")
+            ratings["anime_id"] = ratings["anime_id"].astype("int32")
+            ratings["rating"] = ratings["rating"].astype("float32")
+            self.ui = ratings.pivot_table(index="user_id", columns="anime_id", values="rating", aggfunc="mean").astype("float32")
 
         self.built_at = datetime.now(timezone.utc).isoformat()
         self.build_seconds = round(time.time() - t0, 3)
-        self.shape_ui = tuple(self.ui.shape)
+        self.neighbors_loaded = bool(self._neighbors)
 
     def _find_id(self, title: str) -> Optional[int]:
         t = _norm(title)
@@ -54,27 +77,31 @@ class ItemBasedRecommender:
         m = self.anime[self.anime["name_norm"].str.contains(t, na=False)]
         return int(m.iloc[0]["anime_id"]) if not m.empty else None
 
-    def _sim_series(self, aid: int) -> pd.Series:
-        # correlación item–item por columna con corrwith (min_periods)
-        if aid not in self.ui.columns:
-            return pd.Series(dtype="float32")
+    def _fallback_corr(self, aid: int, topk: int) -> pd.DataFrame:
+        if self.ui is None or aid not in self.ui.columns:
+            return pd.DataFrame(columns=["anime_id","name","correlation"])
         target = self.ui[aid]
         sims = self.ui.corrwith(target, axis=0, method="pearson", drop=False)
-        return sims.astype("float32")
-
-    def similares_por_titulo(self, title: str, topk: int = 10) -> pd.DataFrame:
-        aid = self._find_id(title)
-        if aid is None:
-            raise ValueError(f"No encontré '{title}'")
-        sims = self._sim_series(aid).dropna()
-        # filtra por min_periods con conteo de co-valoraciones
-        common = (~self.ui[aid].isna() & ~self.ui.isna()).sum(axis=0)
-        sims = sims[common >= self.min_periods]
+        common = (~target.isna() & ~self.ui.isna()).sum(axis=0)
+        sims = sims.where(common >= self.min_periods).dropna()
         sims = sims.drop(index=aid, errors="ignore").sort_values(ascending=False).head(topk)
-
         out = pd.DataFrame({"anime_id": sims.index.astype("int32"), "correlation": sims.values.astype("float32")})
         out["name"] = out["anime_id"].map(self.id_to_name)
         return out[["anime_id","name","correlation"]]
+
+    # --------- API ----------
+    def similares_por_titulo(self, title: str, topk: int = 10, order: str = "name") -> pd.DataFrame:
+        aid = self._find_id(title)
+        if aid is None:
+            raise ValueError(f"No encontré '{title}'")
+        if self._neighbors and aid in self._neighbors:
+            out = self._neighbors[aid].head(topk).copy()
+        else:
+            out = self._fallback_corr(aid, max(topk, self.topk_default))
+            out = out.head(topk)
+        if order == "name":
+            out = out.sort_values("name", kind="stable")
+        return out.reset_index(drop=True)
 
     def recomendar_por_vistos(
         self,
@@ -83,6 +110,7 @@ class ItemBasedRecommender:
         ratings_map: Optional[Dict[int, float]] = None,
         default_rating: float = 10.0,
         topk: int = 10,
+        order: str = "name",
     ) -> pd.DataFrame:
         items: List[int] = []
         if seen_names:
@@ -92,40 +120,42 @@ class ItemBasedRecommender:
                     items.append(aid)
         if seen_ids:
             items.extend(seen_ids)
-        items = [i for i in dict.fromkeys(items) if i in self.ui.columns]
+        items = [i for i in dict.fromkeys(items) if (self._neighbors and i in self._neighbors) or (self.ui is not None and i in self.ui.columns)]
         if not items:
             return pd.DataFrame(columns=["anime_id","name","correlation"])
 
-        acc = None
-        counts = None
+        acc = {}
         for aid in items:
-            sims = self._sim_series(aid)
-            c = (~self.ui[aid].isna() & ~self.ui.isna()).sum(axis=0)
-            mask = c >= self.min_periods
-            sims = sims.where(mask)
-            weight = float(ratings_map.get(aid, default_rating)) if ratings_map else default_rating
-            sims = sims * weight
-            if acc is None:
-                acc = sims
-                counts = mask.astype("int32")
+            neigh = None
+            if self._neighbors and aid in self._neighbors:
+                neigh = self._neighbors[aid]
             else:
-                acc = acc.add(sims, fill_value=0.0)
-                counts = counts.add(mask.astype("int32"), fill_value=0)
-        # quita los propios vistos y ordena
-        for aid in items:
-            if acc is not None and aid in acc.index:
-                acc.loc[aid] = float("nan")
-        acc = acc.dropna().sort_values(ascending=False).head(topk)
+                neigh = self._fallback_corr(aid, max(topk, self.topk_default))
+            weight = float(ratings_map.get(aid, default_rating)) if ratings_map else default_rating
+            for _, row in neigh.iterrows():
+                dst = int(row["anime_id"])
+                if dst in items:  # no recomendar vistos
+                    continue
+                acc[dst] = acc.get(dst, 0.0) + float(row["correlation"]) * weight
 
-        out = pd.DataFrame({"anime_id": acc.index.astype("int32"), "correlation": acc.values.astype("float32")})
+        if not acc:
+            return pd.DataFrame(columns=["anime_id","name","correlation"])
+
+        out = pd.DataFrame({"anime_id": list(acc.keys()), "correlation": list(acc.values())})
         out["name"] = out["anime_id"].map(self.id_to_name)
-        return out[["anime_id","name","correlation"]]
+        # orden
+        if order == "name":
+            out = out.sort_values("name", kind="stable")
+        else:
+            out = out.sort_values("correlation", ascending=False, kind="stable")
+        return out.head(topk).reset_index(drop=True)
 
     def status(self) -> dict:
         return {
             "ready": True,
-            "ui_shape": self.shape_ui,
+            "neighbors_loaded": self.neighbors_loaded,
             "min_periods": self.min_periods,
+            "topk_default": self.topk_default,
             "built_at": self.built_at,
             "build_seconds": self.build_seconds,
         }
@@ -133,7 +163,7 @@ class ItemBasedRecommender:
 def get_recommender(base_dir: Path, min_periods: int = 3) -> ItemBasedRecommender:
     global _singleton
     if _singleton is None:
-        _singleton = ItemBasedRecommender(base_dir, min_periods)
+        _singleton = ItemBasedRecommender(base_dir, min_periods=min_periods)
     return _singleton
 
 def get_status(base_dir: Path, min_periods: int = 3) -> dict:

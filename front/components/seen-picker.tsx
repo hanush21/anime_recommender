@@ -16,46 +16,63 @@ type SeenPickerProps = {
     onResults: (items: RecommenderItem[]) => void;
 };
 
+type TitleRow = { anime_id: number; name: string };
+
 export default function SeenPicker({ onResults }: SeenPickerProps) {
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
-    const [suggestions, setSuggestions] = useState<string[]>([]);
+    const [list, setList] = useState<TitleRow[]>([]);
     const [selected, setSelected] = useState<string[]>([]);
     const [submitting, setSubmitting] = useState(false);
-    const [loadingSug, setLoadingSug] = useState(false);
+    const [loading, setLoading] = useState(false);
     const debounceRef = useRef<number | null>(null);
 
-    // cargar sugerencias remotas cuando el usuario escribe
+    // Cargar primer lote al abrir el diálogo
     useEffect(() => {
+        if (!open) return;
+        (async () => {
+            setLoading(true);
+            try {
+                const res = await axios.get<TitleRow[]>("/api/titles", { params: { limit: 300 } });
+                setList(res.data ?? []);
+            } catch {
+                setList([]);
+            } finally {
+                setLoading(false);
+            }
+        })();
+    }, [open]);
+
+    // Buscar cuando el usuario escribe (mín 2 letras) con debounce
+    useEffect(() => {
+        if (!open) return;
         if (debounceRef.current) window.clearTimeout(debounceRef.current);
-        if (search.trim().length < 2) {
-            setSuggestions([]);
+
+        const q = search.trim();
+        if (q.length < 2) {
+            // si borra búsqueda, vuelve a primer lote
             return;
         }
-        setLoadingSug(true);
+        setLoading(true);
         debounceRef.current = window.setTimeout(async () => {
             try {
-                const res = await axios.get<RecommenderItem[]>("/api/recommenders_anime/by-seen", {
-                    params: { q: search.trim(), topk: 50 },
-                });
-                const names = (res.data ?? []).map((r) => r.name);
-                setSuggestions(names);
+                const res = await axios.get<TitleRow[]>("/api/titles", { params: { q, limit: 300 } });
+                setList(res.data ?? []);
             } catch {
-                setSuggestions([]);
+                setList([]);
             } finally {
-                setLoadingSug(false);
+                setLoading(false);
             }
-        }, 350); // debounce
-    }, [search]);
+        }, 350);
+    }, [search, open]);
 
-    const filtered = useMemo(() => suggestions, [suggestions]);
+    const filtered = useMemo(() => list, [list]);
 
     const toggle = (name: string) => {
         setSelected((prev) =>
             prev.includes(name) ? prev.filter((x) => x !== name) : [...prev, name]
         );
     };
-
     const clearAll = () => setSelected([]);
 
     const submit = async () => {
@@ -63,7 +80,7 @@ export default function SeenPicker({ onResults }: SeenPickerProps) {
         setSubmitting(true);
         try {
             const res = await axios.post<RecommenderItem[]>(
-                "/api/recommenders/by-seen",
+                "/api/recommenders_anime/by-seen",
                 { seen_names: selected, topk: 10 }
             );
             onResults(res.data ?? []);
@@ -117,20 +134,20 @@ export default function SeenPicker({ onResults }: SeenPickerProps) {
                                 <Separator />
 
                                 <div className="text-xs text-muted-foreground">
-                                    {loadingSug ? "Buscando…" : `Resultados (${filtered.length})`}
+                                    {loading ? "Cargando…" : `Resultados (${filtered.length})`}
                                 </div>
                                 <ScrollArea className="h-72 rounded-md border p-3">
                                     <div className="grid grid-cols-1 gap-2">
-                                        {filtered.map((name) => {
-                                            const checked = selected.includes(name);
+                                        {filtered.map((row) => {
+                                            const checked = selected.includes(row.name);
                                             return (
-                                                <label key={name} className="flex items-center gap-3 cursor-pointer">
-                                                    <Checkbox checked={checked} onCheckedChange={() => toggle(name)} />
-                                                    <span className="text-sm">{name}</span>
+                                                <label key={`${row.anime_id}-${row.name}`} className="flex items-center gap-3 cursor-pointer">
+                                                    <Checkbox checked={checked} onCheckedChange={() => toggle(row.name)} />
+                                                    <span className="text-sm">{row.name}</span>
                                                 </label>
                                             );
                                         })}
-                                        {!loadingSug && filtered.length === 0 && (
+                                        {!loading && filtered.length === 0 && (
                                             <div className="text-sm text-muted-foreground">Sin coincidencias.</div>
                                         )}
                                     </div>
