@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import RecommendationsTable from "@/components/ui/recommendations-table";
 import SeenPicker from "@/components/seen-picker";
 import type { RecommenderItem } from "@/lib/types";
+import MOCK_RECS  from "@/lib/data.json";
 
 const USE_MOCK = false;
 

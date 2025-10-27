@@ -2,10 +2,10 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-*.sqlite3
-.vscode
 .git
+.vscode
 .env*
-media
-staticfiles
 venv
+staticfiles
+media
+db.sqlite3
