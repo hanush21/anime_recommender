@@ -18,6 +18,11 @@ type SeenPickerProps = {
 
 type TitleRow = { anime_id: number; name: string };
 
+type TitlesResponse = {
+    count: number;
+    results: TitleRow[];
+};
+
 export default function SeenPicker({ onResults }: SeenPickerProps) {
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
@@ -27,20 +32,25 @@ export default function SeenPicker({ onResults }: SeenPickerProps) {
     const [loading, setLoading] = useState(false);
     const debounceRef = useRef<number | null>(null);
 
+    // helper: cargar listado alfabético inicial
+    const loadInitial = async () => {
+        setLoading(true);
+        try {
+            const res = await axios.get<TitlesResponse>("/api/titles", {
+                params: { limit: 300, offset: 0, min_r: 1 },
+            });
+            setList(res.data?.results ?? []);
+        } catch {
+            setList([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     // Cargar primer lote al abrir el diálogo
     useEffect(() => {
         if (!open) return;
-        (async () => {
-            setLoading(true);
-            try {
-                const res = await axios.get<TitleRow[]>("/api/titles", { params: { limit: 300 } });
-                setList(res.data ?? []);
-            } catch {
-                setList([]);
-            } finally {
-                setLoading(false);
-            }
-        })();
+        loadInitial();
     }, [open]);
 
     // Buscar cuando el usuario escribe (mín 2 letras) con debounce
@@ -50,14 +60,18 @@ export default function SeenPicker({ onResults }: SeenPickerProps) {
 
         const q = search.trim();
         if (q.length < 2) {
-            // si borra búsqueda, vuelve a primer lote
+            // si borra búsqueda, vuelve a primer lote (sin bloquear la UI)
+            loadInitial();
             return;
         }
+
         setLoading(true);
         debounceRef.current = window.setTimeout(async () => {
             try {
-                const res = await axios.get<TitleRow[]>("/api/titles", { params: { q, limit: 300 } });
-                setList(res.data ?? []);
+                const res = await axios.get<TitlesResponse>("/api/titles", {
+                    params: { q, limit: 300 },
+                });
+                setList(res.data?.results ?? []);
             } catch {
                 setList([]);
             } finally {
@@ -73,6 +87,7 @@ export default function SeenPicker({ onResults }: SeenPickerProps) {
             prev.includes(name) ? prev.filter((x) => x !== name) : [...prev, name]
         );
     };
+
     const clearAll = () => setSelected([]);
 
     const submit = async () => {
@@ -80,8 +95,8 @@ export default function SeenPicker({ onResults }: SeenPickerProps) {
         setSubmitting(true);
         try {
             const res = await axios.post<RecommenderItem[]>(
-                "/api/recommenders_anime/by-seen",
-                { seen_names: selected, topk: 10 }
+                "/api/recommenders/by-seen",
+                { seen_names: selected, topk: 10, minp: 3 }
             );
             onResults(res.data ?? []);
             setOpen(false);
@@ -117,7 +132,12 @@ export default function SeenPicker({ onResults }: SeenPickerProps) {
                                     <>
                                         <div className="flex flex-wrap gap-2">
                                             {selected.slice(0, 10).map((s) => (
-                                                <Badge key={s} variant="secondary" className="cursor-pointer" onClick={() => toggle(s)}>
+                                                <Badge
+                                                    key={s}
+                                                    variant="secondary"
+                                                    className="cursor-pointer"
+                                                    onClick={() => toggle(s)}
+                                                >
                                                     {s}
                                                 </Badge>
                                             ))}
@@ -126,7 +146,9 @@ export default function SeenPicker({ onResults }: SeenPickerProps) {
                                             )}
                                         </div>
                                         <div className="flex justify-end">
-                                            <Button variant="ghost" size="sm" onClick={clearAll}>Limpiar selección</Button>
+                                            <Button variant="ghost" size="sm" onClick={clearAll}>
+                                                Limpiar selección
+                                            </Button>
                                         </div>
                                     </>
                                 )}
@@ -141,8 +163,14 @@ export default function SeenPicker({ onResults }: SeenPickerProps) {
                                         {filtered.map((row) => {
                                             const checked = selected.includes(row.name);
                                             return (
-                                                <label key={`${row.anime_id}-${row.name}`} className="flex items-center gap-3 cursor-pointer">
-                                                    <Checkbox checked={checked} onCheckedChange={() => toggle(row.name)} />
+                                                <label
+                                                    key={`${row.anime_id}-${row.name}`}
+                                                    className="flex items-center gap-3 cursor-pointer"
+                                                >
+                                                    <Checkbox
+                                                        checked={checked}
+                                                        onCheckedChange={() => toggle(row.name)}
+                                                    />
                                                     <span className="text-sm">{row.name}</span>
                                                 </label>
                                             );
@@ -154,7 +182,9 @@ export default function SeenPicker({ onResults }: SeenPickerProps) {
                                 </ScrollArea>
 
                                 <div className="flex items-center justify-end gap-2 pt-2">
-                                    <Button variant="ghost" onClick={() => setOpen(false)}>Cancelar</Button>
+                                    <Button variant="ghost" onClick={() => setOpen(false)}>
+                                        Cancelar
+                                    </Button>
                                     <Button onClick={submit} disabled={selected.length === 0 || submitting}>
                                         {submitting ? "Generando…" : "Ver recomendaciones"}
                                     </Button>
