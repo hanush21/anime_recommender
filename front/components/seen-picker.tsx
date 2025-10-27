@@ -95,7 +95,7 @@ export default function SeenPicker({ onResults }: SeenPickerProps) {
         setSubmitting(true);
         try {
             const res = await axios.post<RecommenderItem[]>(
-                "/api/recommenders/by-seen",
+                "/api/recommenders_anime/by-seen",
                 { seen_names: selected, topk: 10, minp: 3 }
             );
             onResults(res.data ?? []);
