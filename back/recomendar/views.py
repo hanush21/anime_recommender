@@ -4,8 +4,15 @@ from rest_framework import status
 from django.conf import settings
 from pathlib import Path
 from .utils.Anime_recomendator import get_recommender
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
 
 DATA_DIR = Path(settings.BASE_DIR) / "recomendar" / "utils"
+
+@api_view(["GET"])
+def healthz(request):
+    return Response({"status": "ok"}, status=200)
 
 @api_view(["GET"])
 def getrecomenders(request):

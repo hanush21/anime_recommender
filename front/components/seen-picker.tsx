@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,6 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
 import axios from "axios";
-import MOCK_RECS from "@/lib/data.json";
 import type { RecommenderItem } from "@/lib/types";
 
 type SeenPickerProps = {
@@ -20,19 +19,36 @@ type SeenPickerProps = {
 export default function SeenPicker({ onResults }: SeenPickerProps) {
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState("");
+    const [suggestions, setSuggestions] = useState<string[]>([]);
     const [selected, setSelected] = useState<string[]>([]);
     const [submitting, setSubmitting] = useState(false);
+    const [loadingSug, setLoadingSug] = useState(false);
+    const debounceRef = useRef<number | null>(null);
 
-    const allNames = useMemo(
-        () => (MOCK_RECS as { name: string; correlation: number }[]).map((x) => x.name),
-        []
-    );
+    // cargar sugerencias remotas cuando el usuario escribe
+    useEffect(() => {
+        if (debounceRef.current) window.clearTimeout(debounceRef.current);
+        if (search.trim().length < 2) {
+            setSuggestions([]);
+            return;
+        }
+        setLoadingSug(true);
+        debounceRef.current = window.setTimeout(async () => {
+            try {
+                const res = await axios.get<RecommenderItem[]>("/api/recommenders_anime/by-seen", {
+                    params: { q: search.trim(), topk: 50 },
+                });
+                const names = (res.data ?? []).map((r) => r.name);
+                setSuggestions(names);
+            } catch {
+                setSuggestions([]);
+            } finally {
+                setLoadingSug(false);
+            }
+        }, 350); // debounce
+    }, [search]);
 
-    const filtered = useMemo(() => {
-        const q = search.trim().toLowerCase();
-        if (!q) return allNames.slice(0, 200); // límite de render para rendimiento
-        return allNames.filter((n) => n.toLowerCase().includes(q)).slice(0, 200);
-    }, [allNames, search]);
+    const filtered = useMemo(() => suggestions, [suggestions]);
 
     const toggle = (name: string) => {
         setSelected((prev) =>
@@ -46,22 +62,19 @@ export default function SeenPicker({ onResults }: SeenPickerProps) {
         if (selected.length === 0) return;
         setSubmitting(true);
         try {
-            // Mock server-side: POST al handler interno
             const res = await axios.post<RecommenderItem[]>(
                 "/api/recommenders/by-seen",
-                { seen: selected }
+                { seen_names: selected, topk: 10 }
             );
             onResults(res.data ?? []);
             setOpen(false);
         } catch (e) {
-            // en un caso real, aquí podrías disparar un toast
             console.error(e);
         } finally {
             setSubmitting(false);
         }
     };
 
-    // UI
     return (
         <Card>
             <CardContent className="p-4 space-y-3">
@@ -78,7 +91,7 @@ export default function SeenPicker({ onResults }: SeenPickerProps) {
 
                             <div className="space-y-3">
                                 <Input
-                                    placeholder="Buscar título…"
+                                    placeholder="Busca título (mín. 2 letras)…"
                                     value={search}
                                     onChange={(e) => setSearch(e.target.value)}
                                 />
@@ -103,7 +116,9 @@ export default function SeenPicker({ onResults }: SeenPickerProps) {
 
                                 <Separator />
 
-                                <div className="text-xs text-muted-foreground">Resultados ({filtered.length})</div>
+                                <div className="text-xs text-muted-foreground">
+                                    {loadingSug ? "Buscando…" : `Resultados (${filtered.length})`}
+                                </div>
                                 <ScrollArea className="h-72 rounded-md border p-3">
                                     <div className="grid grid-cols-1 gap-2">
                                         {filtered.map((name) => {
@@ -115,7 +130,7 @@ export default function SeenPicker({ onResults }: SeenPickerProps) {
                                                 </label>
                                             );
                                         })}
-                                        {filtered.length === 0 && (
+                                        {!loadingSug && filtered.length === 0 && (
                                             <div className="text-sm text-muted-foreground">Sin coincidencias.</div>
                                         )}
                                     </div>
@@ -133,7 +148,7 @@ export default function SeenPicker({ onResults }: SeenPickerProps) {
                 </div>
 
                 <p className="text-xs text-muted-foreground">
-                    Elige varios títulos que ya viste; generaremos recomendaciones en base a tu selección (mock).
+                    Elige varios títulos; generaremos recomendaciones basadas en tu selección.
                 </p>
             </CardContent>
         </Card>
