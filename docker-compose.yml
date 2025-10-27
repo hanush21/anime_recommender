@@ -3,44 +3,35 @@ services:
     build:
       context: ./back
     container_name: backend
-    ports:
-      - "8000:8000"
+    ports: ["8000:8000"]
     environment:
       - PYTHONUNBUFFERED=1
-      - DJ_MIN_PERIODS=3
-      - DJ_TOPK=50
-      - DJ_CACHE_DIR=/cache
+      - DISABLE_WARMUP=1         # <- clave: no intentes warmup
     volumes:
       - ./back:/app
       - ./back/db.sqlite3:/app/db.sqlite3
-      - ./cache:/cache
     command: >
       sh -c "
         python manage.py migrate --noinput &&
-        python manage.py build_neighbors --min-periods=${DJ_MIN_PERIODS:-3} --topk=${DJ_TOPK:-50} &&
-        python manage.py warmup_recommender --min-periods=${DJ_MIN_PERIODS:-3} &&
         python manage.py runserver 0.0.0.0:8000 --noreload
       "
-
     healthcheck:
-      test: ["CMD-SHELL", "curl -sSf http://localhost:8000/recommender/status | grep -q '\"ready\": true'"]
-      interval: 5s
-      timeout: 4s
-      retries: 120
-      start_period: 30s
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/healthz >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
     restart: unless-stopped
 
   frontend:
     build:
       context: ./front
     container_name: frontend
-    ports:
-      - "3001:3000"
+    ports: ["3001:3000"]
     environment:
       - NODE_ENV=development
       - NEXT_PUBLIC_API_URL=http://backend:8000
       - NEXT_TELEMETRY_DISABLED=1
-    command: npm run dev -- -p 3000 -H 0.0.0.0
+    command: npm run dev -- -p 3001 -H 0.0.0.0
     volumes:
       - ./front:/app
       - /app/node_modules
