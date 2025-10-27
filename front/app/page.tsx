@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import RecommendationsTable from "@/components/ui/recommendations-table";
+import SeenPicker from "@/components/seen-picker";
 import type { RecommenderItem } from "@/lib/types";
 import MOCK_RECS from "@/lib/data.json";
 
@@ -110,8 +111,12 @@ export default function Home() {
                 )}
               </CardContent>
             </Card>
+            <SeenPicker onResults={(items) => {
+              setErr(null);
+              setLoading(false);
+              setData(items);
+            }} />
 
-            
           </div>
 
           {/* Columna derecha: resultados */}
