@@ -1,4 +1,3 @@
-# recomendar/apps.py
 from django.apps import AppConfig
 from pathlib import Path
 from django.conf import settings
@@ -16,7 +15,7 @@ class RecomendarConfig(AppConfig):
         if _WARMED_UP:
             return
         try:
-            from .utils.recommender import get_recommender
+            from .utils.Anime_recomendator import get_recommender   # <— AQUÍ
             base_dir = Path(settings.BASE_DIR) / "recomendar" / "utils"
             t0 = time.time()
             logger.info("WARMUP start: building item-item correlation…")

@@ -11,10 +11,11 @@ services:
       - ./back:/app
       - ./back/db.sqlite3:/app/db.sqlite3
     healthcheck:
-      test: ["CMD-SHELL", "curl -sSf http://localhost:8000/healthz > /dev/null"]
+      test: ["CMD-SHELL", "curl -sSf http://localhost:8000/recommender/status | grep -q '\"ready\": true'"]
       interval: 5s
-      timeout: 3s
-      retries: 10
+      timeout: 5s
+      retries: 30
+
 
   frontend:
     build:

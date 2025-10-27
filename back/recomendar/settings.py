@@ -42,10 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "corsheaders", 
+    "recomendar.apps.RecomendarConfig",  # <- la AppConfig correcta
     "rest_framework",
-    "recomendar.apps.RecomendarConfig",
-    "recomendar.middleware.RequestTimingMiddleware",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -56,7 +55,25 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "recomendar.middleware.RequestTimingMiddleware",
 ]
+
+# (Opcional) Logging útil
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "simple": {"format": "[%(asctime)s] %(levelname)s %(name)s: %(message)s", "datefmt": "%H:%M:%S"},
+    },
+    "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "simple"}},
+    "loggers": {
+        "recomendar": {"handlers": ["console"], "level": "INFO", "propagate": False},
+        "recomendar.request": {"handlers": ["console"], "level": "INFO", "propagate": False},
+        "django.request": {"handlers": ["console"], "level": "WARNING", "propagate": False},
+        "django.server": {"handlers": ["console"], "level": "INFO", "propagate": False},
+        "": {"handlers": ["console"], "level": "INFO"},
+    },
+}
 
 ROOT_URLCONF = 'recomendar.urls'
 

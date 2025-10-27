@@ -5,7 +5,7 @@ from django.conf import settings
 from pathlib import Path
 import logging
 
-from .utils.recommender import get_recommender, get_status  # <— importa del módulo correcto
+from .utils.Anime_recomendator import get_recommender, get_status  # <— AQUÍ
 
 logger = logging.getLogger("recomendar")
 DATA_DIR = Path(settings.BASE_DIR) / "recomendar" / "utils"
@@ -17,8 +17,7 @@ def healthz(request):
 @api_view(["GET"])
 def recommender_status(request):
     try:
-        data = get_status(DATA_DIR, 10)
-        return Response(data, status=200)
+        return Response(get_status(DATA_DIR, 10), status=200)
     except Exception as e:
         return Response({"ready": False, "error": str(e)}, status=500)
 
@@ -32,9 +31,7 @@ def getrecomenders(request):
     try:
         rec = get_recommender(DATA_DIR, min_periods=10)
         df = rec.similares_por_titulo(q, topk=topk)
-        payload = df.to_dict(orient="records")
-        logger.info("getrecomenders -> %d resultados", len(payload))
-        return Response(payload, status=200)
+        return Response(df.to_dict(orient="records"), status=200)
     except Exception as e:
         logger.exception("getrecomenders ERROR: %s", e)
         return Response({"error": str(e)}, status=400)
@@ -47,33 +44,19 @@ def recommend_by_seen(request):
     ratings_map_raw = data.get("ratings") or {}
     default_rating = float(data.get("rating", 10.0))
     topk = int(data.get("topk", 10))
-
-    logger.info("POST /recommend_by_seen seen_names=%d seen_ids=%d topk=%d",
-                len(seen_names), len(seen_ids), topk)
-
-    # normaliza ratings_map
     ratings_map = {}
     for k, v in ratings_map_raw.items():
-        try:
-            ratings_map[int(k)] = float(v)
-        except Exception:
-            continue
-
+        try: ratings_map[int(k)] = float(v)
+        except Exception: pass
     if not seen_names and not seen_ids:
         return Response({"error": "Debes enviar 'seen_names' o 'seen_ids'."}, status=400)
-
+    logger.info("POST /recommend_by_seen seen_names=%d seen_ids=%d topk=%d", len(seen_names), len(seen_ids), topk)
     try:
         rec = get_recommender(DATA_DIR, min_periods=10)
-        df = rec.recomendar_por_vistos(
-            seen_ids=seen_ids,
-            seen_names=seen_names,
-            ratings_map=ratings_map or None,
-            default_rating=default_rating,
-            topk=topk,
-        )
-        payload = df.to_dict(orient="records")
-        logger.info("recommend_by_seen -> %d resultados", len(payload))
-        return Response(payload, status=200)
+        df = rec.recomendar_por_vistos(seen_ids=seen_ids, seen_names=seen_names,
+                                       ratings_map=ratings_map or None,
+                                       default_rating=default_rating, topk=topk)
+        return Response(df.to_dict(orient="records"), status=200)
     except Exception as e:
         logger.exception("recommend_by_seen ERROR: %s", e)
         return Response({"error": str(e)}, status=400)
