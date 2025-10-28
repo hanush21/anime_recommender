@@ -3,7 +3,7 @@ from django.conf import settings
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .utils.recommender_light import get_recommender
+from .utils.recommender import get_recommender
 
 DATA_DIR = Path(settings.BASE_DIR) / "recomendar" / "utils"
 
@@ -17,7 +17,7 @@ def healthz(_request):
 def getrecomenders(request):
     """
     GET /getrecomenders?q=<titulo|fragmento>&topk=10&minp=3
-    Respuesta: [{ anime_id, name, correlation }]
+    Respuesta: [{ anime_id, name, correlation, genre, episodes }]
     Si no hay match exacto, toma el mejor por substring (popularidad por 'members').
     """
     q = request.query_params.get("q", "")
@@ -29,7 +29,7 @@ def getrecomenders(request):
     try:
         rec = get_recommender(DATA_DIR, min_periods=minp)
         df = rec.similares_por_titulo(q, topk=topk)
-        payload = df[["anime_id", "name", "correlation"]].to_dict(orient="records")
+        payload = df[["anime_id", "name", "correlation", "genre", "episodes"]].to_dict(orient="records")
         return Response(payload, status=200)
     except Exception as e:
         return Response({"error": str(e)}, status=400)
@@ -74,14 +74,14 @@ def titles(request):
             if "name_norm" not in base.columns:
                 base["name_norm"] = base["name"].str.normalize("NFKD").str.encode("ascii", "ignore").str.decode("ascii").str.lower()
             mask = base["name_norm"].str.contains(s.lower(), na=False)
-            sub = base.loc[mask, ["anime_id", "name", "members", "rating_count"]]
+            sub = base.loc[mask, ["anime_id", "name", "members", "rating_count", "genre", "episodes"]]
             sub = sub.sort_values(["members", "name"], ascending=[False, True])
             total = int(sub.shape[0])
             results = sub.head(limit).to_dict(orient="records")
             return Response({"count": total, "results": results}, status=200)
 
         # LISTADO ALFABÉTICO (sin 's')
-        sub = base.loc[:, ["anime_id", "name", "members", "rating_count"]]
+        sub = base.loc[:, ["anime_id", "name", "members", "rating_count", "genre", "episodes"]]
         sub = sub.sort_values("name", ascending=True)
         total = int(sub.shape[0])
 
@@ -108,7 +108,7 @@ def recommend_by_seen(request):
       - rating:     float  (rating por defecto si no pasas 'ratings')
       - topk:       int
       - minp:       int
-    Respuesta: [{ anime_id, name, score }]
+    Respuesta: [{ anime_id, name, score, genre, episodes }]
     """
     data = request.data if isinstance(request.data, dict) else {}
     seen_names = data.get("seen_names") or []
@@ -130,7 +130,7 @@ def recommend_by_seen(request):
             default_rating=default_rating,
             topk=topk,
         )
-        payload = df[["anime_id", "name", "score"]].to_dict(orient="records")
+        payload = df[["anime_id", "name", "score", "genre", "episodes"]].to_dict(orient="records")
         return Response(payload, status=200)
     except Exception as e:
         return Response({"error": str(e)}, status=400)

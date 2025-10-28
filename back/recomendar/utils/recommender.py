@@ -11,9 +11,11 @@ class LightRecommender:
         self.min_periods = int(min_periods)
 
         self.anime = pd.read_csv(self.data_dir / "anime.csv",
-                                 usecols=["anime_id","name","members"])
+                                 usecols=["anime_id","name","members","genre","episodes"])  # Añadidos genre y episodes
         self.anime["anime_id"] = self.anime["anime_id"].astype("int32")
         self.anime["members"] = self.anime["members"].fillna(0).astype("int64")
+        self.anime["episodes"] = self.anime["episodes"].fillna(0).astype("int32")  # Convertir episodes a int
+        self.anime["genre"] = self.anime["genre"].fillna("Unknown")  # Manejar géneros vacíos
         self.anime["name_norm"] = self.anime["name"].astype(str).str.strip().str.lower()
 
         self.ratings = pd.read_csv(self.data_dir / "ratings_clean_1.csv",
@@ -29,7 +31,6 @@ class LightRecommender:
         return self.id_by_name.get(str(title).strip().lower())
 
     def best_match_id(self, query: str) -> Optional[int]:
-        """Si no hay match exacto, busca por substring y elige el más popular (members desc)."""
         q = str(query).strip().lower()
         if not q:
             return None
@@ -42,9 +43,10 @@ class LightRecommender:
     def suggest_titles(self, q: str, limit: int = 50) -> pd.DataFrame:
         qn = str(q).strip().lower()
         if not qn or len(qn) < 2:
-            return pd.DataFrame(columns=["anime_id","name","members"])
+            return pd.DataFrame(columns=["anime_id","name","members","genre","episodes"])
         df = (
-            self.anime.loc[self.anime["name_norm"].str.contains(qn, na=False), ["anime_id","name","members"]]
+            self.anime.loc[self.anime["name_norm"].str.contains(qn, na=False), 
+                          ["anime_id","name","members","genre","episodes"]]
             .sort_values(["members","name"], ascending=[False, True])
             .head(int(limit))
             .reset_index(drop=True)
@@ -85,7 +87,7 @@ class LightRecommender:
 
         sims = sims.dropna()
         if sims.empty:
-            return pd.DataFrame(columns=["anime_id","correlation","common","name"])
+            return pd.DataFrame(columns=["anime_id","correlation","common","name","genre","episodes"])
 
         top = sims.sort_values(ascending=False).head(int(topk))
         out = pd.DataFrame({
@@ -93,8 +95,7 @@ class LightRecommender:
             "correlation": top.values.astype("float32"),
             "common": common.loc[top.index].astype("int32").values
         })
-        out = out.merge(self.anime[["anime_id","name"]], on="anime_id", how="left")
-        # orden alfabético como pediste
+        out = out.merge(self.anime[["anime_id","name","genre","episodes"]], on="anime_id", how="left")
         out = out.sort_values(["name"], ascending=[True]).reset_index(drop=True)
         return out
 
@@ -140,11 +141,10 @@ class LightRecommender:
                 acc[row.anime_id] = acc.get(row.anime_id, 0.0) + (row.correlation * weight)
 
         if not acc:
-            return pd.DataFrame(columns=["anime_id","name","score"])
+            return pd.DataFrame(columns=["anime_id","name","score","genre","episodes"])
 
         out = pd.DataFrame([(k, v) for k, v in acc.items()], columns=["anime_id","score"])
-        out = out.merge(self.anime[["anime_id","name"]], on="anime_id", how="left")
-        # alfabético y luego score desc
+        out = out.merge(self.anime[["anime_id","name","genre","episodes"]], on="anime_id", how="left")
         out = out.sort_values(by=["name","score"], ascending=[True, False]).head(int(topk)).reset_index(drop=True)
         return out
 
@@ -156,7 +156,6 @@ def get_recommender(base_dir: Path, min_periods: int = 3) -> LightRecommender:
     if _recommender is None:
         _recommender = LightRecommender(base_dir, min_periods=min_periods)
     else:
-        # si cambiamos min_periods por request, crea otro si difiere
         if _recommender.min_periods != int(min_periods):
             _recommender = LightRecommender(base_dir, min_periods=min_periods)
     return _recommender
